@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Daily Tasks</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: linear-gradient(to bottom right, #f1f5f9, #e2e8f0);
+      min-height: 100vh;
+      padding: 16px;
+    }
+    .container { max-width: 600px; margin: 0 auto; }
+    h1 { font-size: 28px; font-weight: bold; color: #0f172a; margin-bottom: 8px; }
+    .date { color: #4b5563; margin-bottom: 32px; }
+    .card {
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+      border: 1px solid #e2e8f0;
+      margin-bottom: 24px;
+      overflow: hidden;
+    }
+    .card-header {
+      padding: 16px;
+      background: #f0fdf4;
+      border-bottom: 1px solid #e2e8f0;
+      font-weight: 600;
+      color: #166534;
+    }
+    ul { list-style: none; }
+    li {
+      padding: 16px;
+      border-top: 1px solid #e2e8f0;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    li:first-child { border-top: none; }
+    input[type="checkbox"] {
+      width: 20px;
+      height: 20px;
+      cursor: pointer;
+    }
+    .task-name { color: #1e293b; font-weight: 500; flex: 1; }
+    .task-name.done { color: #94a3b8; text-decoration: line-through; }
+    .empty { padding: 24px; text-align: center; color: #64748b; }
+    .error {
+      background: #fef2f2;
+      border: 1px solid #fecaca;
+      color: #7f1d1d;
+      padding: 16px;
+      border-radius: 8px;
+      margin-bottom: 24px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Today's Tasks</h1>
+    <p class="date" id="date"></p>
+    <div id="error" class="error" style="display:none;"></div>
+    <div class="card">
+      <ul id="todayTasks">
+        <li class="empty">Loading tasks...</li>
+      </ul>
+    </div>
+    <div id="completedSection" style="display:none;">
+      <div class="card">
+        <div class="card-header">✓ Completed (<span id="completedCount">0</span>)</div>
+        <ul id="completedTasks"></ul>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const SHEET_ID = '1g9YRrgmiJv5zEnCb8wlfThjxHhl_iK02cdSkW4tbZFs';
+    const SHEET_NAME = 'Tasks';
+    let allTasks = [];
+    const today = new Date().toISOString().split('T')[0];
+
+    // Set date
+    document.getElementById('date').textContent = new Date().toLocaleDateString('en-US', 
+      { weekday: 'long', month: 'long', day: 'numeric' });
+
+    // Fetch tasks from Google Sheets
+    async function loadTasks() {
+      try {
+        const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${SHEET_NAME}`;
+        const response = await fetch(url);
+        const text = await response.text();
+        const json = JSON.parse(text.substring(47).slice(0, -2));
+        
+        allTasks = json.table.rows.map(row => ({
+          id: row.c[0]?.v,
+          task: row.c[1]?.v || '',
+          date: row.c[2]?.v || '',
+          completed: row.c[3]?.v === true || row.c[3]?.v === 'TRUE',
+          completedDate: row.c[4]?.v || ''
+        })).filter(t => t.task);
+
+        renderTasks();
+      } catch (error) {
+        console.error('Error:', error);
+        document.getElementById('error').textContent = 'Failed to load tasks.';
+        document.getElementById('error').style.display = 'block';
+      }
+    }
+
+    function renderTasks() {
+      const todayTasks = allTasks.filter(t => t.date === today && !t.completed);
+      const completedTasks = allTasks.filter(t => t.completed);
+
+      const todayHtml = todayTasks.length === 0 
+        ? '<li class="empty">No tasks for today. Great start! 🎉</li>'
+        : todayTasks.map(t => `
+          <li>
+            <input type="checkbox" onchange="toggleTask('${t.id}', true)">
+            <span class="task-name">${t.task}</span>
+          </li>
+        `).join('');
+
+      document.getElementById('todayTasks').innerHTML = todayHtml;
+
+      if (completedTasks.length > 0) {
+        document.getElementById('completedSection').style.display = 'block';
+        document.getElementById('completedCount').textContent = completedTasks.length;
+        document.getElementById('completedTasks').innerHTML = completedTasks.map(t => `
+          <li>
+            <input type="checkbox" checked onchange="toggleTask('${t.id}', false)">
+            <span class="task-name done">${t.task}</span>
+          </li>
+        `).join('');
+      }
+    }
+
+    async function toggleTask(id, completed) {
+      const task = allTasks.find(t => t.id == id);
+      if (!task) return;
+
+      task.completed = completed;
+      task.completedDate = completed ? today : '';
+
+      renderTasks();
+      
+      // Note: Updates save to Google Sheet via Apps Script
+      // This is read-only for now via the public Sheets API
+    }
+
+    loadTasks();
+    setInterval(loadTasks, 10000);
+  </script>
+</body>
+</html>
