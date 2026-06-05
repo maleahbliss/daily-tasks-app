@@ -17,7 +17,10 @@ export default function DailyTasksApp() {
 
   const fetchTasks = async () => {
     try {
-      const response = await fetch(`${APPS_SCRIPT_URL}?action=getTasks`);
+      const response = await fetch(`${APPS_SCRIPT_URL}?action=getTasks`, {
+        method: 'GET',
+        mode: 'cors'
+      });
       const data = await response.json();
       setTasks(data);
       setLoading(false);
@@ -32,6 +35,10 @@ export default function DailyTasksApp() {
     try {
       const response = await fetch(APPS_SCRIPT_URL, {
         method: 'POST',
+        mode: 'cors',
+        headers: {
+          'Content-Type': 'application/json'
+        },
         body: JSON.stringify({
           action: 'updateTask',
           id: taskId,
