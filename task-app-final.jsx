@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzpItWOS50xb3djUP2E-injgx58jtUkZTRmni_AeeOaTGGG9oYNy1wfFSFwUEg/usercallable';
+const APPS_SCRIPT_URL = '/.netlify/functions/tasks';
 
 export default function DailyTasksApp() {
   const [tasks, setTasks] = useState([]);
@@ -17,30 +17,23 @@ export default function DailyTasksApp() {
 
   const fetchTasks = async () => {
     try {
-      const response = await fetch(`${APPS_SCRIPT_URL}?action=getTasks`, {
-        method: 'GET',
-        mode: 'cors'
-      });
+      const response = await fetch(`${APPS_SCRIPT_URL}?action=getTasks`);
       const data = await response.json();
       setTasks(data);
       setLoading(false);
     } catch (err) {
       console.error('Error fetching tasks:', err);
-      setError('Failed to load tasks. Check your connection.');
+      setError('Failed to load tasks. Retrying...');
       setLoading(false);
     }
   };
 
   const toggleTask = async (taskId, currentCompleted) => {
     try {
-      const response = await fetch(APPS_SCRIPT_URL, {
+      const response = await fetch(`${APPS_SCRIPT_URL}?action=updateTask`, {
         method: 'POST',
-        mode: 'cors',
-        headers: {
-          'Content-Type': 'application/json'
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          action: 'updateTask',
           id: taskId,
           completed: !currentCompleted
         })
