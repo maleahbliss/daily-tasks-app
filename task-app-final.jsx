@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-const APPS_SCRIPT_URL = '/.netlify/functions/tasks';
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbylcnnlATRL2KKMzXMxNwNSGHATm7m7yDiTLaxQtJGzBZRuayHPzMKC-u892J_hlTnCrA/usercallable';
 
 export default function DailyTasksApp() {
   const [tasks, setTasks] = useState([]);
