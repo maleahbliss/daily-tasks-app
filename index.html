@@ -1,0 +1,1014 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Done</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #f5f5f5;
+            color: #333;
+        }
+
+        .header {
+            background: white;
+            padding: 1rem;
+            border-bottom: 1px solid #e0e0e0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            max-width: 800px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+        }
+
+        .nav-tabs {
+            display: flex;
+            gap: 0.5rem;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 0.5rem 1rem;
+            background: white;
+            border-bottom: 1px solid #e0e0e0;
+            overflow-x: auto;
+        }
+
+        .nav-tab {
+            padding: 0.6rem 1rem;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 0.95rem;
+            color: #999;
+            white-space: nowrap;
+            transition: all 0.2s;
+            border-bottom: 3px solid transparent;
+        }
+
+        .nav-tab.active {
+            color: #333;
+            border-bottom-color: #333;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 1rem;
+            background: white;
+            min-height: calc(100vh - 120px);
+        }
+
+        .dashboard {
+            display: none;
+        }
+
+        .dashboard.active {
+            display: block;
+        }
+
+        .date-header {
+            font-size: 0.9rem;
+            color: #999;
+            margin-bottom: 1.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .task-item {
+            display: flex;
+            align-items: center;
+            padding: 1rem;
+            border-bottom: 1px solid #f0f0f0;
+            cursor: pointer;
+            transition: background 0.1s;
+        }
+
+        .task-item:hover {
+            background: #fafafa;
+        }
+
+        .task-item.completed {
+            opacity: 0.6;
+        }
+
+        .task-item.completed .task-text {
+            text-decoration: line-through;
+            color: #999;
+        }
+
+        .task-checkbox {
+            width: 24px;
+            height: 24px;
+            border: 2px solid #ddd;
+            border-radius: 4px;
+            margin-right: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            flex-shrink: 0;
+            transition: all 0.2s;
+        }
+
+        .task-item.completed .task-checkbox {
+            background: #4CAF50;
+            border-color: #4CAF50;
+            color: white;
+        }
+
+        .task-text {
+            font-size: 1rem;
+            font-weight: 400;
+        }
+
+        .streak-badge {
+            margin-left: auto;
+            background: #e3f2fd;
+            color: #1976d2;
+            padding: 0.4rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+
+        .parent-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .child-card {
+            background: #f9f9f9;
+            padding: 1.5rem;
+            border-radius: 8px;
+            border-left: 4px solid;
+        }
+
+        .child-card.emerson {
+            border-left-color: #7B68EE;
+        }
+
+        .child-card.ireland {
+            border-left-color: #FF1493;
+        }
+
+        .child-card.avenleigh {
+            border-left-color: #FF8C00;
+        }
+
+        .child-card h3 {
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+        }
+
+        .stat-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.8rem;
+            font-size: 0.95rem;
+        }
+
+        .stat-label {
+            color: #666;
+        }
+
+        .stat-value {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: #e0e0e0;
+            border-radius: 3px;
+            margin: 1rem 0;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #FF6B6B, #4ECDC4);
+            transition: width 0.3s;
+        }
+
+        .input-section {
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        .input-group {
+            margin-bottom: 1rem;
+        }
+
+        .input-label {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 0.4rem;
+            display: block;
+            font-weight: 500;
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+            font-family: inherit;
+        }
+
+        .input-field:focus {
+            outline: none;
+            border-color: #333;
+            box-shadow: 0 0 0 2px rgba(51, 51, 51, 0.1);
+        }
+
+        .btn {
+            background: #333;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: background 0.2s;
+            width: 100%;
+            margin-top: 1rem;
+        }
+
+        .btn:hover {
+            background: #555;
+        }
+
+        .notes-area {
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        textarea {
+            width: 100%;
+            padding: 1rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-family: inherit;
+            font-size: 0.95rem;
+            min-height: 120px;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #333;
+        }
+
+        .plan-section {
+            margin-bottom: 2rem;
+        }
+
+        .plan-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .plan-content {
+            font-size: 0.95rem;
+            line-height: 1.6;
+            color: #555;
+        }
+
+        .plan-content ul {
+            margin-left: 1.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .plan-content li {
+            margin-bottom: 0.4rem;
+        }
+
+        @media (max-width: 600px) {
+            .parent-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .nav-tabs {
+                gap: 0;
+            }
+
+            .nav-tab {
+                flex: 1;
+                text-align: center;
+                border-bottom: none;
+                border-top: 3px solid transparent;
+            }
+
+            .nav-tab.active {
+                border-bottom: none;
+                border-top-color: #333;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-content">
+            <h1>Done</h1>
+        </div>
+    </div>
+
+    <div class="nav-tabs">
+        <button class="nav-tab active" onclick="switchTab('emerson')">Emerson</button>
+        <button class="nav-tab" onclick="switchTab('ireland')">Ireland</button>
+        <button class="nav-tab" onclick="switchTab('avenleigh')">Avenleigh</button>
+        <button class="nav-tab" onclick="switchTab('parent')">Parent</button>
+        <button class="nav-tab" onclick="switchTab('plan')">Plan</button>
+    </div>
+
+    <div class="container">
+        <!-- EMERSON -->
+        <div id="emerson" class="dashboard active">
+            <div class="date-header" id="emerson-date"></div>
+            
+            <div class="task-item" onclick="toggleTask('emerson', 'shower')">
+                <div class="task-checkbox"></div>
+                <div class="task-text">Shower/Hygiene</div>
+                <div class="streak-badge" id="emerson-shower-streak">0</div>
+            </div>
+
+            <div class="task-item" onclick="toggleTask('emerson', 'breakfast')">
+                <div class="task-checkbox"></div>
+                <div class="task-text">Breakfast</div>
+                <div class="streak-badge" id="emerson-breakfast-streak">0</div>
+            </div>
+
+            <div class="task-item" onclick="toggleTask('emerson', 'chore')">
+                <div class="task-checkbox"></div>
+                <div class="task-text" id="emerson-chore-text">Daily Chore</div>
+                <div class="streak-badge" id="emerson-chore-streak">0</div>
+            </div>
+
+            <div class="task-item" onclick="toggleTask('emerson', 'room')">
+                <div class="task-checkbox"></div>
+                <div class="task-text">Room Straightened</div>
+                <div class="streak-badge" id="emerson-room-streak">0</div>
+            </div>
+
+            <div class="task-item" onclick="toggleTask('emerson', 'checkin')">
+                <div class="task-checkbox"></div>
+                <div class="task-text">Check In with Mom</div>
+                <div class="streak-badge" id="emerson-checkin-streak">0</div>
+            </div>
+
+            <div class="input-section">
+                <div class="input-group">
+                    <label class="input-label">Push-ups Today</label>
+                    <input type="number" id="emerson-pushups" class="input-field" placeholder="0">
+                </div>
+                <div class="input-group">
+                    <label class="input-label">Mile Time (mm:ss)</label>
+                    <input type="text" id="emerson-mile" class="input-field" placeholder="16:00">
+                </div>
+                <div class="input-group">
+                    <label class="input-label">Credit Recovery Hours</label>
+                    <input type="number" id="emerson-credit" class="input-field" placeholder="0" step="0.5">
+                </div>
+                <div class="input-group">
+                    <label class="input-label">Driving Hours</label>
+                    <input type="number" id="emerson-driving" class="input-field" placeholder="0" step="0.5">
+                </div>
+                <button class="btn" onclick="saveEmersonTracking()">Save</button>
+            </div>
+        </div>
+
+        <!-- IRELAND -->
+        <div id="ireland" class="dashboard">
+            <div class="date-header" id="ireland-date"></div>
+            
+            <div class="task-item" onclick="toggleTask('ireland', 'shower')">
+                <div class="task-checkbox"></div>
+                <div class="task-text">Shower/Hygiene</div>
+                <div class="streak-badge" id="ireland-shower-streak">0</div>
+            </div>
+
+            <div class="task-item" onclick="toggleTask('ireland', 'breakfast')">
+                <div class="task-checkbox"></div>
+                <div class="task-text">Breakfast</div>
+                <div class="streak-badge" id="ireland-breakfast-streak">0</div>
+            </div>
+
+            <div class="task-item" onclick="toggleTask('ireland', 'chore')">
+                <div class="task-checkbox"></div>
+                <div class="task-text" id="ireland-chore-text">Daily Chore</div>
+                <div class="streak-badge" id="ireland-chore-streak">0</div>
+            </div>
+
+            <div class="task-item" onclick="toggleTask('ireland', 'room')">
+                <div class="task-checkbox"></div>
+                <div class="task-text">Room Straightened</div>
+                <div class="streak-badge" id="ireland-room-streak">0</div>
+            </div>
+
+            <div class="task-item" onclick="toggleTask('ireland', 'checkin')">
+                <div class="task-checkbox"></div>
+                <div class="task-text">Check In with Mom</div>
+                <div class="streak-badge" id="ireland-checkin-streak">0</div>
+            </div>
+
+            <div class="task-item" onclick="toggleTask('ireland', 'emp')">
+                <div class="task-checkbox"></div>
+                <div class="task-text">EMP Supplement</div>
+                <div class="streak-badge" id="ireland-emp-streak">0</div>
+            </div>
+
+            <div class="task-item" onclick="toggleTask('ireland', 'writing')">
+                <div class="task-checkbox"></div>
+                <div class="task-text">Book Editing/Writing</div>
+                <div class="streak-badge" id="ireland-writing-streak">0</div>
+            </div>
+
+            <div class="task-item" onclick="toggleTask('ireland', 'vocal')">
+                <div class="task-checkbox"></div>
+                <div class="task-text">Vocal Training</div>
+                <div class="streak-badge" id="ireland-vocal-streak">0</div>
+            </div>
+
+            <div class="task-item" onclick="toggleTask('ireland', 'reading')">
+                <div class="task-checkbox"></div>
+                <div class="task-text">Reading</div>
+                <div class="streak-badge" id="ireland-reading-streak">0</div>
+            </div>
+
+            <div class="task-item" onclick="toggleTask('ireland', 'duolingo')">
+                <div class="task-checkbox"></div>
+                <div class="task-text">Duolingo</div>
+                <div class="streak-badge" id="ireland-duolingo-streak">0</div>
+            </div>
+
+            <div class="task-item" onclick="toggleTask('ireland', 'friends')">
+                <div class="task-checkbox"></div>
+                <div class="task-text">Text Friends</div>
+                <div class="streak-badge" id="ireland-friends-streak">0</div>
+            </div>
+
+            <div class="input-section">
+                <div class="input-group">
+                    <label class="input-label">Pages Edited Today</label>
+                    <input type="number" id="ireland-pages" class="input-field" placeholder="0">
+                </div>
+                <div class="input-group">
+                    <label class="input-label">Money Earned This Week</label>
+                    <input type="number" id="ireland-money" class="input-field" placeholder="0">
+                </div>
+                <button class="btn" onclick="saveIrelandTracking()">Save</button>
+            </div>
+        </div>
+
+        <!-- AVENLEIGH -->
+        <div id="avenleigh" class="dashboard">
+            <div class="date-header" id="avenleigh-date"></div>
+            
+            <div class="task-item" onclick="toggleTask('avenleigh', 'shower')">
+                <div class="task-checkbox"></div>
+                <div class="task-text">Shower/Hygiene</div>
+                <div class="streak-badge" id="avenleigh-shower-streak">0</div>
+            </div>
+
+            <div class="task-item" onclick="toggleTask('avenleigh', 'breakfast')">
+                <div class="task-checkbox"></div>
+                <div class="task-text">Breakfast</div>
+                <div class="streak-badge" id="avenleigh-breakfast-streak">0</div>
+            </div>
+
+            <div class="task-item" onclick="toggleTask('avenleigh', 'chore')">
+                <div class="task-checkbox"></div>
+                <div class="task-text" id="avenleigh-chore-text">Daily Chore</div>
+                <div class="streak-badge" id="avenleigh-chore-streak">0</div>
+            </div>
+
+            <div class="task-item" onclick="toggleTask('avenleigh', 'room')">
+                <div class="task-checkbox"></div>
+                <div class="task-text">Room Straightened</div>
+                <div class="streak-badge" id="avenleigh-room-streak">0</div>
+            </div>
+
+            <div class="task-item" onclick="toggleTask('avenleigh', 'reading')">
+                <div class="task-checkbox"></div>
+                <div class="task-text">Reading (20 minutes)</div>
+                <div class="streak-badge" id="avenleigh-reading-streak">0</div>
+            </div>
+
+            <div class="task-item" onclick="toggleTask('avenleigh', 'duolingo')">
+                <div class="task-checkbox"></div>
+                <div class="task-text">Duolingo (5 lessons)</div>
+                <div class="streak-badge" id="avenleigh-duolingo-streak">0</div>
+            </div>
+
+            <div class="task-item" onclick="toggleTask('avenleigh', 'emp')">
+                <div class="task-checkbox"></div>
+                <div class="task-text">Take EMP Supplement</div>
+                <div class="streak-badge" id="avenleigh-emp-streak">0</div>
+            </div>
+
+            <div class="task-item" onclick="toggleTask('avenleigh', 'laxative')">
+                <div class="task-checkbox"></div>
+                <div class="task-text">Laxative Chocolate</div>
+                <div class="streak-badge" id="avenleigh-laxative-streak">0</div>
+            </div>
+
+            <div class="task-item" onclick="toggleTask('avenleigh', 'vocal')">
+                <div class="task-checkbox"></div>
+                <div class="task-text">Vocal Training</div>
+                <div class="streak-badge" id="avenleigh-vocal-streak">0</div>
+            </div>
+
+            <div class="input-section">
+                <div class="input-group">
+                    <label class="input-label">Pages Read Today</label>
+                    <input type="number" id="avenleigh-pages" class="input-field" placeholder="0">
+                </div>
+                <div class="input-group">
+                    <label class="input-label">Books Finished</label>
+                    <input type="number" id="avenleigh-books" class="input-field" placeholder="0">
+                </div>
+                <div class="input-group">
+                    <label class="input-label">YouTube Subscribers</label>
+                    <input type="number" id="avenleigh-yt" class="input-field" placeholder="0">
+                </div>
+                <button class="btn" onclick="saveAvenleighTracking()">Save</button>
+            </div>
+        </div>
+
+        <!-- PARENT DASHBOARD -->
+        <div id="parent" class="dashboard">
+            <h2 style="margin-bottom: 2rem; font-size: 1.3rem;">Progress Overview</h2>
+
+            <div class="parent-grid">
+                <div class="child-card emerson">
+                    <h3>Emerson</h3>
+                    <div class="stat-row">
+                        <span class="stat-label">Streak</span>
+                        <span class="stat-value" id="p-emerson-streak">0 days</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-label">Today's Progress</span>
+                        <span class="stat-value" id="p-emerson-progress">0%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="p-emerson-fill" style="width: 0%"></div>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-label">Total Push-ups</span>
+                        <span class="stat-value" id="p-emerson-pushups">0</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-label">Best Mile Time</span>
+                        <span class="stat-value" id="p-emerson-mile">—</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-label">Credit Hours</span>
+                        <span class="stat-value" id="p-emerson-credit">0h</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-label">Driving Hours</span>
+                        <span class="stat-value" id="p-emerson-driving">0h</span>
+                    </div>
+                </div>
+
+                <div class="child-card ireland">
+                    <h3>Ireland</h3>
+                    <div class="stat-row">
+                        <span class="stat-label">Streak</span>
+                        <span class="stat-value" id="p-ireland-streak">0 days</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-label">Today's Progress</span>
+                        <span class="stat-value" id="p-ireland-progress">0%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="p-ireland-fill" style="width: 0%"></div>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-label">Pages Edited</span>
+                        <span class="stat-value" id="p-ireland-pages">0</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-label">Money Earned</span>
+                        <span class="stat-value" id="p-ireland-money">$0</span>
+                    </div>
+                </div>
+
+                <div class="child-card avenleigh">
+                    <h3>Avenleigh</h3>
+                    <div class="stat-row">
+                        <span class="stat-label">Streak</span>
+                        <span class="stat-value" id="p-avenleigh-streak">0 days</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-label">Today's Progress</span>
+                        <span class="stat-value" id="p-avenleigh-progress">0%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="p-avenleigh-fill" style="width: 0%"></div>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-label">Pages Read</span>
+                        <span class="stat-value" id="p-avenleigh-pages">0</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-label">Books Finished</span>
+                        <span class="stat-value" id="p-avenleigh-books">0</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-label">YT Subscribers</span>
+                        <span class="stat-value" id="p-avenleigh-yt">0</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="notes-area">
+                <h3 style="margin-bottom: 1rem;">Notes</h3>
+                <textarea id="parent-notes" placeholder="Observations, patterns, wins, challenges..."></textarea>
+                <button class="btn" onclick="saveParentNotes()">Save Notes</button>
+            </div>
+        </div>
+
+        <!-- PLAN TAB -->
+        <div id="plan" class="dashboard">
+            <h2 style="margin-bottom: 2rem; font-size: 1.3rem;">Summer Plan</h2>
+
+            <div class="plan-section">
+                <div class="plan-title">Emerson's Goals</div>
+                <div class="plan-content">
+                    <ul>
+                        <li>Fitness: 250 push-ups/day, 10-minute mile</li>
+                        <li>Complete credit recovery (16-20 hours)</li>
+                        <li>Get driving hours logged for independence</li>
+                        <li>Explore identity beyond coding (blacksmithing, tutoring)</li>
+                        <li>Boys State prep (spring 2027 application, summer attendance)</li>
+                    </ul>
+                    <p style="margin-top: 1rem;"><strong>Approach:</strong> Don't push AI. Let Ireland's success inspire him. Explore tutoring, blacksmithing, web design as alternatives.</p>
+                </div>
+            </div>
+
+            <div class="plan-section">
+                <div class="plan-title">Ireland's Goals</div>
+                <div class="plan-content">
+                    <ul>
+                        <li>Publish book "Son of Night" (editing complete this summer)</li>
+                        <li>Earn $500-1,000 toward laptop (freelance writing, web design, social media)</li>
+                        <li>Vocal training for Astrid role (How to Train Your Dragon musical)</li>
+                        <li>Continue reading growth</li>
+                        <li>Maintain friendships (Kaylee, Cali, Kylie-Brandon's daughter)</li>
+                    </ul>
+                    <p style="margin-top: 1rem;"><strong>Work style:</strong> Night owl (3am peak), needs reminders, flexible scheduling, recognition for her work.</p>
+                </div>
+            </div>
+
+            <div class="plan-section">
+                <div class="plan-title">Avenleigh's Goals</div>
+                <div class="plan-content">
+                    <ul>
+                        <li>Find a dragon book that captivates her (Wings of Fire or similar)</li>
+                        <li>Build reading confidence (15-20 min daily with Mom nearby)</li>
+                        <li>Start YouTube channel toward 100 subscribers</li>
+                        <li>Explore beauty/cosmetology path (makeup, nails, hair)</li>
+                        <li>Keep room organized with structure and support</li>
+                        <li>Earn sticks ($1 per complete day, 10 sticks = $10)</li>
+                    </ul>
+                    <p style="margin-top: 1rem;"><strong>Support:</strong> Hyper-specific task breakdowns, 5-min transition warnings, visual timers, Mom nearby during reading, celebration of small wins.</p>
+                </div>
+            </div>
+
+            <div class="plan-section">
+                <div class="plan-title">Daily System</div>
+                <div class="plan-content">
+                    <p><strong>Before electronics:</strong> Shower, breakfast, chore, room, check-in with Mom</p>
+                    <p style="margin-top: 0.5rem;"><strong>Auto-rotating chores:</strong> Sweeping & Vacuuming → Dishes & Kitchen → Living Room & Laundry (changes daily, no manual updates)</p>
+                    <p style="margin-top: 0.5rem;"><strong>Tracking:</strong> Push-ups, miles, pages edited, money earned, pages read, YouTube subscribers</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const CHILDREN = ['emerson', 'ireland', 'avenleigh'];
+        const CHORES = ['Sweeping & Vacuuming', 'Dishes & Kitchen', 'Living Room & Laundry'];
+
+        let appState = {
+            today: new Date().toISOString().split('T')[0],
+            data: {
+                emerson: { tasks: {}, tracking: { pushups: 0, miles: [] }, streak: 0 },
+                ireland: { tasks: {}, tracking: { pages: 0, money: 0 }, streak: 0 },
+                avenleigh: { tasks: {}, tracking: { pages: 0, yt: 0 }, streak: 0 }
+            },
+            parentNotes: ''
+        };
+
+        function getChoreForChild(child) {
+            // Chore rotation based on which WEEK they're at mom's house
+            // Reference: June 14, 2026 (Sunday) = Start of Week 1 at mom's
+            
+            const todayStr = appState.today; // Format: YYYY-MM-DD
+            const [year, month, day] = todayStr.split('-').map(Number);
+            
+            // Reference date: June 14, 2026 (today - kids arriving)
+            const referenceStr = '2026-06-14';
+            const [refYear, refMonth, refDay] = referenceStr.split('-').map(Number);
+            
+            // Calculate days difference
+            const todayDate = new Date(year, month - 1, day);
+            const refDate = new Date(refYear, refMonth - 1, refDay);
+            const daysDiff = Math.floor((todayDate - refDate) / (1000 * 60 * 60 * 24));
+            const weeksDiff = Math.floor(daysDiff / 7);
+            
+            // Every 2 weeks = 1 rotation cycle (1 week at mom's, 1 week at dad's)
+            const cycleWeek = weeksDiff % 2; // 0 = at mom's, 1 = at dad's
+            const rotationPhase = Math.floor(weeksDiff / 2) % 3; // Which rotation phase (0, 1, or 2)
+            
+            // If they're at dad's (cycleWeek === 1), no chore
+            if (cycleWeek === 1) {
+                return 'No chore (at dad\'s)';
+            }
+            
+            // At mom's house - assign chore based on rotation phase
+            const choreRotations = {
+                emerson: ['Laundry & Living Room', 'Sweeping & Floors', 'Dishes & Kitchen'],
+                ireland: ['Sweeping & Floors', 'Dishes & Kitchen', 'Laundry & Living Room'],
+                avenleigh: ['Dishes & Kitchen', 'Laundry & Living Room', 'Sweeping & Floors']
+            };
+            
+            return choreRotations[child][rotationPhase];
+        }
+
+        function updateChoreDisplays() {
+            CHILDREN.forEach(child => {
+                const el = document.getElementById(`${child}-chore-text`);
+                if (el) el.textContent = getChoreForChild(child);
+            });
+        }
+
+        function updateDateHeaders() {
+            const todayStr = appState.today; // Format: YYYY-MM-DD
+            const [year, month, day] = todayStr.split('-').map(Number);
+            const today = new Date(year, month - 1, day); // Create date in local timezone
+            const options = { weekday: 'long', month: 'long', day: 'numeric' };
+            const dateStr = today.toLocaleDateString('en-US', options).toUpperCase();
+            CHILDREN.forEach(child => {
+                const el = document.getElementById(`${child}-date`);
+                if (el) el.textContent = dateStr;
+            });
+        }
+
+        function switchTab(tab) {
+            document.querySelectorAll('.dashboard').forEach(d => d.classList.remove('active'));
+            document.getElementById(tab).classList.add('active');
+            document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+            event.target.classList.add('active');
+            updateParentDashboard();
+        }
+
+        function toggleTask(child, task) {
+            const today = appState.today;
+            if (!appState.data[child].tasks[today]) {
+                appState.data[child].tasks[today] = {};
+            }
+            appState.data[child].tasks[today][task] = !appState.data[child].tasks[today][task];
+            
+            // Find the task item by looking through all items in the child's dashboard
+            const dashboard = document.getElementById(child);
+            const taskItems = dashboard.querySelectorAll('.task-item');
+            
+            taskItems.forEach(item => {
+                // Check if this is the task we're looking for by examining the onclick attribute
+                if (item.getAttribute('onclick') && item.getAttribute('onclick').includes(`'${task}'`)) {
+                    const checkbox = item.querySelector('.task-checkbox');
+                    if (appState.data[child].tasks[today][task]) {
+                        item.classList.add('completed');
+                        checkbox.textContent = '✓';
+                    } else {
+                        item.classList.remove('completed');
+                        checkbox.textContent = '';
+                    }
+                }
+            });
+
+            updateStreaks(child);
+            updateParentDashboard();
+            saveToLocalStorage();
+        }
+
+        function updateStreaks(child) {
+            const today = new Date(appState.today);
+            let streak = 0;
+            const requiredTasks = ['shower', 'breakfast', 'chore', 'room', 'checkin'];
+            if (child === 'avenleigh') requiredTasks.pop(); // Avenleigh doesn't have checkin
+
+            for (let i = 0; i < 365; i++) {
+                const checkDate = new Date(today);
+                checkDate.setDate(checkDate.getDate() - i);
+                const dateStr = checkDate.toISOString().split('T')[0];
+                const dayTasks = appState.data[child].tasks[dateStr] || {};
+                if (requiredTasks.every(t => dayTasks[t])) {
+                    streak++;
+                } else {
+                    break;
+                }
+            }
+            appState.data[child].streak = streak;
+        }
+
+        function updateParentDashboard() {
+            const today = appState.today;
+            CHILDREN.forEach(child => {
+                const todayTasks = appState.data[child].tasks[today] || {};
+                const requiredTasks = ['shower', 'breakfast', 'chore', 'room', 'checkin'];
+                if (child === 'avenleigh') requiredTasks.pop();
+                
+                const completed = requiredTasks.filter(t => todayTasks[t]).length;
+                const progress = (completed / requiredTasks.length) * 100;
+
+                const progressEl = document.getElementById(`p-${child}-progress`);
+                if (progressEl) progressEl.textContent = Math.round(progress) + '%';
+
+                const fillEl = document.getElementById(`p-${child}-fill`);
+                if (fillEl) fillEl.style.width = progress + '%';
+
+                const streakEl = document.getElementById(`p-${child}-streak`);
+                if (streakEl) streakEl.textContent = appState.data[child].streak + ' days';
+            });
+
+            const notesEl = document.getElementById('parent-notes');
+            if (notesEl) notesEl.value = appState.parentNotes;
+
+            const pushupEl = document.getElementById('p-emerson-pushups');
+            if (pushupEl) pushupEl.textContent = appState.data.emerson.tracking.pushups;
+
+            const creditEl = document.getElementById('p-emerson-credit');
+            if (creditEl) creditEl.textContent = (appState.data.emerson.tracking.creditHours || 0) + 'h';
+
+            const drivingEl = document.getElementById('p-emerson-driving');
+            if (drivingEl) drivingEl.textContent = (appState.data.emerson.tracking.drivingHours || 0) + 'h';
+
+            const pagesEl = document.getElementById('p-ireland-pages');
+            if (pagesEl) pagesEl.textContent = appState.data.ireland.tracking.pages;
+
+            const moneyEl = document.getElementById('p-ireland-money');
+            if (moneyEl) moneyEl.textContent = '$' + appState.data.ireland.tracking.money;
+
+            const avPagesEl = document.getElementById('p-avenleigh-pages');
+            if (avPagesEl) avPagesEl.textContent = appState.data.avenleigh.tracking.pages;
+
+            const avBooksEl = document.getElementById('p-avenleigh-books');
+            if (avBooksEl) avBooksEl.textContent = appState.data.avenleigh.tracking.books || 0;
+
+            const avYtEl = document.getElementById('p-avenleigh-yt');
+            if (avYtEl) avYtEl.textContent = appState.data.avenleigh.tracking.yt;
+        }
+
+        function saveEmersonTracking() {
+            const pushups = parseInt(document.getElementById('emerson-pushups').value) || 0;
+            const mile = document.getElementById('emerson-mile').value;
+            const credit = parseFloat(document.getElementById('emerson-credit').value) || 0;
+            const driving = parseFloat(document.getElementById('emerson-driving').value) || 0;
+
+            appState.data.emerson.tracking.pushups += pushups;
+            if (mile) appState.data.emerson.tracking.miles.push(mile);
+            appState.data.emerson.tracking.creditHours = (appState.data.emerson.tracking.creditHours || 0) + credit;
+            appState.data.emerson.tracking.drivingHours = (appState.data.emerson.tracking.drivingHours || 0) + driving;
+
+            document.getElementById('emerson-pushups').value = '';
+            document.getElementById('emerson-mile').value = '';
+            document.getElementById('emerson-credit').value = '';
+            document.getElementById('emerson-driving').value = '';
+
+            updateParentDashboard();
+            saveToLocalStorage();
+            alert('Tracking saved!');
+        }
+
+        function saveIrelandTracking() {
+            const pages = parseInt(document.getElementById('ireland-pages').value) || 0;
+            const money = parseInt(document.getElementById('ireland-money').value) || 0;
+
+            appState.data.ireland.tracking.pages += pages;
+            appState.data.ireland.tracking.money += money;
+
+            document.getElementById('ireland-pages').value = '';
+            document.getElementById('ireland-money').value = '';
+
+            updateParentDashboard();
+            saveToLocalStorage();
+            alert('Tracking saved!');
+        }
+
+        function saveAvenleighTracking() {
+            const pages = parseInt(document.getElementById('avenleigh-pages').value) || 0;
+            const books = parseInt(document.getElementById('avenleigh-books').value) || 0;
+            const yt = parseInt(document.getElementById('avenleigh-yt').value) || 0;
+
+            appState.data.avenleigh.tracking.pages += pages;
+            appState.data.avenleigh.tracking.books = (appState.data.avenleigh.tracking.books || 0) + books;
+            appState.data.avenleigh.tracking.yt = yt;
+
+            document.getElementById('avenleigh-pages').value = '';
+            document.getElementById('avenleigh-books').value = '';
+            document.getElementById('avenleigh-yt').value = '';
+
+            updateParentDashboard();
+            saveToLocalStorage();
+            alert('Tracking saved!');
+        }
+
+        function saveParentNotes() {
+            appState.parentNotes = document.getElementById('parent-notes').value;
+            saveToLocalStorage();
+            alert('Notes saved!');
+        }
+
+        function saveToLocalStorage() {
+            localStorage.setItem('doneAppState', JSON.stringify(appState));
+        }
+
+        function loadFromLocalStorage() {
+            const saved = localStorage.getItem('doneAppState');
+            if (saved) {
+                try {
+                    appState = JSON.parse(saved);
+                } catch (e) {
+                    console.log('Could not load state');
+                }
+            }
+            const now = new Date().toISOString().split('T')[0];
+            if (appState.today !== now) {
+                appState.today = now;
+                CHILDREN.forEach(child => {
+                    appState.data[child].tasks[now] = {};
+                });
+            }
+        }
+
+        function initializeCheckboxes() {
+            const today = appState.today;
+            CHILDREN.forEach(child => {
+                const dashboard = document.getElementById(child);
+                if (!dashboard) return;
+                
+                const taskItems = dashboard.querySelectorAll('.task-item');
+                taskItems.forEach(item => {
+                    const checkbox = item.querySelector('.task-checkbox');
+                    const onclickAttr = item.getAttribute('onclick');
+                    
+                    // Extract task name from onclick attribute
+                    const match = onclickAttr.match(/toggleTask\('([^']+)',\s*'([^']+)'\)/);
+                    if (match) {
+                        const taskChild = match[1];
+                        const taskName = match[2];
+                        
+                        if (appState.data[taskChild].tasks[today] && appState.data[taskChild].tasks[today][taskName]) {
+                            item.classList.add('completed');
+                            checkbox.textContent = '✓';
+                        } else {
+                            item.classList.remove('completed');
+                            checkbox.textContent = '';
+                        }
+                    }
+                });
+            });
+        }
+
+        function init() {
+            loadFromLocalStorage();
+            updateDateHeaders();
+            updateChoreDisplays();
+            updateParentDashboard();
+            initializeCheckboxes();
+        }
+
+        init();
+    </script>
+</body>
+</html>
