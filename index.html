@@ -659,34 +659,31 @@
 
         <!-- HISTORY TAB -->
         <div id="history" class="dashboard">
-            <h2 style="margin-bottom: 1.5rem; font-size: 1.3rem;">Past Data</h2>
+            <h2 style="margin-bottom: 1rem; font-size: 1.3rem;">History</h2>
             
-            <div class="input-group" style="margin-bottom: 1.5rem;">
-                <label class="input-label">View data for:</label>
-                <select id="history-child" class="input-field" onchange="updateHistoryView()">
-                    <option value="emerson">Emerson</option>
-                    <option value="ireland">Ireland</option>
-                    <option value="avenleigh">Avenleigh</option>
-                </select>
+            <div style="display: flex; gap: 1rem; margin-bottom: 1.5rem;">
+                <div class="input-group" style="flex: 1;">
+                    <label class="input-label">Child:</label>
+                    <select id="history-child" class="input-field" onchange="updateHistoryView()">
+                        <option value="emerson">Emerson</option>
+                        <option value="ireland">Ireland</option>
+                        <option value="avenleigh">Avenleigh</option>
+                    </select>
+                </div>
+                <div class="input-group" style="flex: 1;">
+                    <label class="input-label">Date:</label>
+                    <input type="date" id="history-date" class="input-field" onchange="updateHistoryView()">
+                </div>
             </div>
 
-            <div id="history-table" style="overflow-x: auto;">
-                <table style="width: 100%; border-collapse: collapse; font-size: 0.9rem;">
-                    <thead>
-                        <tr style="border-bottom: 2px solid #ddd;">
-                            <th style="text-align: left; padding: 0.75rem; font-weight: 600;">Date</th>
-                            <th style="text-align: center; padding: 0.75rem; font-weight: 600;">Progress</th>
-                            <th style="text-align: center; padding: 0.75rem; font-weight: 600;">Tasks Done</th>
-                        </tr>
-                    </thead>
-                    <tbody id="history-rows">
-                    </tbody>
-                </table>
+            <div id="history-task-list" style="margin-bottom: 2rem;">
+                <!-- Tasks will be populated here -->
             </div>
 
-            <div style="margin-top: 2rem; padding-top: 1rem; border-top: 1px solid #e0e0e0;">
-                <h3 style="margin-bottom: 1rem;">Last 30 Days Summary</h3>
-                <div id="history-summary" style="font-size: 0.95rem; line-height: 1.8; color: #666;">
+            <div id="history-calendar" style="margin-top: 2rem; padding-top: 1rem; border-top: 1px solid #e0e0e0; display: none;">
+                <h3 style="margin-bottom: 1rem;">Calendar View</h3>
+                <div id="calendar-grid" style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 0.5rem;">
+                    <!-- Calendar will be populated here -->
                 </div>
             </div>
         </div>
@@ -1000,67 +997,99 @@
 
         function updateHistoryView() {
             const child = document.getElementById('history-child').value;
+            const dateInput = document.getElementById('history-date');
+            
+            // Set default date to today if not set
+            if (!dateInput.value) {
+                dateInput.value = appState.today;
+            }
+            
+            const selectedDate = dateInput.value;
             const tasks = appState.data[child].tasks;
-            const dates = Object.keys(tasks).sort().reverse(); // Most recent first
+            const dayTasks = tasks[selectedDate] || {};
             
-            // Get required tasks for this child
-            const requiredTasks = ['shower', 'breakfast', 'chore', 'room', 'checkin'];
-            if (child === 'avenleigh') requiredTasks.pop();
+            // Get all unique task names for this child
+            const allTasks = ['shower', 'breakfast', 'chore', 'room', 'checkin', 'emp', 'laxative', 'reading', 'duolingo', 'writing', 'vocal', 'friends'];
+            const childTasks = allTasks.filter(t => {
+                // Check if this task appears in any day for this child
+                return Object.values(tasks).some(day => t in day);
+            });
             
-            // Build table
-            const tbody = document.getElementById('history-rows');
-            tbody.innerHTML = '';
+            // Get task labels
+            const taskLabels = {
+                shower: 'Shower/Hygiene',
+                breakfast: 'Breakfast',
+                chore: 'Daily Chore',
+                room: 'Room Straightened',
+                checkin: 'Check In with Mom',
+                emp: 'Take EMP Supplement',
+                laxative: 'Laxative Chocolate',
+                reading: 'Reading',
+                duolingo: 'Duolingo',
+                writing: 'Book Editing/Writing',
+                vocal: 'Vocal Training',
+                friends: 'Text Friends'
+            };
             
-            dates.slice(0, 30).forEach(date => {
-                const dayTasks = tasks[date] || {};
-                const completed = requiredTasks.filter(t => dayTasks[t]).length;
-                const progress = Math.round((completed / requiredTasks.length) * 100);
+            // Task colors
+            const taskColors = {
+                shower: '#7B68EE',
+                breakfast: '#FF1493',
+                chore: '#FF8C00',
+                room: '#20B2AA',
+                checkin: '#4169E1',
+                emp: '#DC143C',
+                laxative: '#FF69B4',
+                reading: '#228B22',
+                duolingo: '#FFD700',
+                writing: '#FF6347',
+                vocal: '#9370DB',
+                friends: '#00CED1'
+            };
+            
+            // Display date header
+            const dateObj = new Date(selectedDate + 'T00:00:00');
+            const dateHeader = dateObj.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' }).toUpperCase();
+            
+            // Build task list
+            const taskList = document.getElementById('history-task-list');
+            let html = `<div style="background: #f5f5f5; padding: 1rem; border-radius: 4px; margin-bottom: 1.5rem; font-weight: 600; text-align: center;">${dateHeader}</div>`;
+            
+            childTasks.forEach(taskKey => {
+                const isCompleted = dayTasks[taskKey] === true;
+                const label = taskLabels[taskKey] || taskKey;
+                const color = taskColors[taskKey] || '#999';
                 
-                const dateObj = new Date(date + 'T00:00:00');
-                const dayName = dateObj.toLocaleDateString('en-US', { weekday: 'short' });
-                const dateStr = dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-                
-                const row = document.createElement('tr');
-                row.style.borderBottom = '1px solid #f0f0f0';
-                row.innerHTML = `
-                    <td style="padding: 0.75rem; text-align: left;">
-                        <span style="color: #999; font-size: 0.85rem;">${dayName}</span><br>${dateStr}
-                    </td>
-                    <td style="padding: 0.75rem; text-align: center;">
-                        <div style="width: 100%; background: #f0f0f0; border-radius: 4px; height: 20px; overflow: hidden;">
-                            <div style="background: linear-gradient(90deg, #FF6B6B, #4ECDC4); width: ${progress}%; height: 100%; transition: width 0.2s;"></div>
+                html += `
+                    <div class="task-item" style="display: flex; align-items: center; padding: 1rem; border-bottom: 1px solid #f0f0f0;">
+                        <div style="width: 24px; height: 24px; border: 2px solid ${color}; border-radius: 4px; margin-right: 1rem; display: flex; align-items: center; justify-content: center; flex-shrink: 0; background: ${isCompleted ? color : 'transparent'}; color: white; font-weight: bold;">
+                            ${isCompleted ? '✓' : ''}
                         </div>
-                        <span style="font-size: 0.8rem; color: #666;">${progress}%</span>
-                    </td>
-                    <td style="padding: 0.75rem; text-align: center; font-weight: 600;">
-                        ${completed}/${requiredTasks.length}
-                    </td>
+                        <div class="task-text" style="flex: 1;">${label}</div>
+                        <div class="streak-badge" style="background: ${color}20; color: ${color}; padding: 0.4rem 0.8rem; border-radius: 20px; font-size: 0.8rem; font-weight: 600; margin-left: auto;">
+                            ${getTaskStreak(child, taskKey)}
+                        </div>
+                    </div>
                 `;
-                tbody.appendChild(row);
             });
             
-            // Summary stats
-            const last30 = dates.slice(0, 30);
-            let completedDays = 0;
-            let totalDays = last30.length;
-            let avgProgress = 0;
+            taskList.innerHTML = html;
+        }
+        
+        function getTaskStreak(child, taskKey) {
+            const tasks = appState.data[child].tasks;
+            const dates = Object.keys(tasks).sort().reverse();
+            let streak = 0;
             
-            last30.forEach(date => {
-                const dayTasks = tasks[date] || {};
-                const completed = requiredTasks.filter(t => dayTasks[t]).length;
-                const progress = completed / requiredTasks.length;
-                if (progress === 1) completedDays++;
-                avgProgress += progress * 100;
-            });
+            for (let date of dates) {
+                if (tasks[date][taskKey]) {
+                    streak++;
+                } else {
+                    break;
+                }
+            }
             
-            avgProgress = totalDays > 0 ? Math.round(avgProgress / totalDays) : 0;
-            
-            const summary = document.getElementById('history-summary');
-            summary.innerHTML = `
-                <p><strong>Perfect days:</strong> ${completedDays} out of ${totalDays}</p>
-                <p><strong>Average completion:</strong> ${avgProgress}%</p>
-                <p><strong>Completion rate:</strong> ${totalDays > 0 ? Math.round((completedDays / totalDays) * 100) : 0}%</p>
-            `;
+            return streak;
         }
 
         function saveToLocalStorage() {
