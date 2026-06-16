@@ -345,6 +345,7 @@
         <button class="nav-tab" onclick="switchTab('ireland')">Ireland</button>
         <button class="nav-tab" onclick="switchTab('avenleigh')">Avenleigh</button>
         <button class="nav-tab" onclick="switchTab('parent')">Parent</button>
+        <button class="nav-tab" onclick="switchTab('history')">History</button>
         <button class="nav-tab" onclick="switchTab('plan')">Plan</button>
     </div>
 
@@ -656,6 +657,40 @@
             </div>
         </div>
 
+        <!-- HISTORY TAB -->
+        <div id="history" class="dashboard">
+            <h2 style="margin-bottom: 1.5rem; font-size: 1.3rem;">Past Data</h2>
+            
+            <div class="input-group" style="margin-bottom: 1.5rem;">
+                <label class="input-label">View data for:</label>
+                <select id="history-child" class="input-field" onchange="updateHistoryView()">
+                    <option value="emerson">Emerson</option>
+                    <option value="ireland">Ireland</option>
+                    <option value="avenleigh">Avenleigh</option>
+                </select>
+            </div>
+
+            <div id="history-table" style="overflow-x: auto;">
+                <table style="width: 100%; border-collapse: collapse; font-size: 0.9rem;">
+                    <thead>
+                        <tr style="border-bottom: 2px solid #ddd;">
+                            <th style="text-align: left; padding: 0.75rem; font-weight: 600;">Date</th>
+                            <th style="text-align: center; padding: 0.75rem; font-weight: 600;">Progress</th>
+                            <th style="text-align: center; padding: 0.75rem; font-weight: 600;">Tasks Done</th>
+                        </tr>
+                    </thead>
+                    <tbody id="history-rows">
+                    </tbody>
+                </table>
+            </div>
+
+            <div style="margin-top: 2rem; padding-top: 1rem; border-top: 1px solid #e0e0e0;">
+                <h3 style="margin-bottom: 1rem;">Last 30 Days Summary</h3>
+                <div id="history-summary" style="font-size: 0.95rem; line-height: 1.8; color: #666;">
+                </div>
+            </div>
+        </div>
+
         <!-- PLAN TAB -->
         <div id="plan" class="dashboard">
             <h2 style="margin-bottom: 2rem; font-size: 1.3rem;">Summer Plan</h2>
@@ -963,6 +998,71 @@
             alert('Notes saved!');
         }
 
+        function updateHistoryView() {
+            const child = document.getElementById('history-child').value;
+            const tasks = appState.data[child].tasks;
+            const dates = Object.keys(tasks).sort().reverse(); // Most recent first
+            
+            // Get required tasks for this child
+            const requiredTasks = ['shower', 'breakfast', 'chore', 'room', 'checkin'];
+            if (child === 'avenleigh') requiredTasks.pop();
+            
+            // Build table
+            const tbody = document.getElementById('history-rows');
+            tbody.innerHTML = '';
+            
+            dates.slice(0, 30).forEach(date => {
+                const dayTasks = tasks[date] || {};
+                const completed = requiredTasks.filter(t => dayTasks[t]).length;
+                const progress = Math.round((completed / requiredTasks.length) * 100);
+                
+                const dateObj = new Date(date + 'T00:00:00');
+                const dayName = dateObj.toLocaleDateString('en-US', { weekday: 'short' });
+                const dateStr = dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                
+                const row = document.createElement('tr');
+                row.style.borderBottom = '1px solid #f0f0f0';
+                row.innerHTML = `
+                    <td style="padding: 0.75rem; text-align: left;">
+                        <span style="color: #999; font-size: 0.85rem;">${dayName}</span><br>${dateStr}
+                    </td>
+                    <td style="padding: 0.75rem; text-align: center;">
+                        <div style="width: 100%; background: #f0f0f0; border-radius: 4px; height: 20px; overflow: hidden;">
+                            <div style="background: linear-gradient(90deg, #FF6B6B, #4ECDC4); width: ${progress}%; height: 100%; transition: width 0.2s;"></div>
+                        </div>
+                        <span style="font-size: 0.8rem; color: #666;">${progress}%</span>
+                    </td>
+                    <td style="padding: 0.75rem; text-align: center; font-weight: 600;">
+                        ${completed}/${requiredTasks.length}
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+            
+            // Summary stats
+            const last30 = dates.slice(0, 30);
+            let completedDays = 0;
+            let totalDays = last30.length;
+            let avgProgress = 0;
+            
+            last30.forEach(date => {
+                const dayTasks = tasks[date] || {};
+                const completed = requiredTasks.filter(t => dayTasks[t]).length;
+                const progress = completed / requiredTasks.length;
+                if (progress === 1) completedDays++;
+                avgProgress += progress * 100;
+            });
+            
+            avgProgress = totalDays > 0 ? Math.round(avgProgress / totalDays) : 0;
+            
+            const summary = document.getElementById('history-summary');
+            summary.innerHTML = `
+                <p><strong>Perfect days:</strong> ${completedDays} out of ${totalDays}</p>
+                <p><strong>Average completion:</strong> ${avgProgress}%</p>
+                <p><strong>Completion rate:</strong> ${totalDays > 0 ? Math.round((completedDays / totalDays) * 100) : 0}%</p>
+            `;
+        }
+
         function saveToLocalStorage() {
             localStorage.setItem('doneAppState', JSON.stringify(appState));
         }
@@ -1033,6 +1133,7 @@
             updateChoreDisplays();
             updateParentDashboard();
             initializeCheckboxes();
+            updateHistoryView();
         }
 
         init();
