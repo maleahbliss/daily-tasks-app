@@ -1008,12 +1008,14 @@
             const tasks = appState.data[child].tasks;
             const dayTasks = tasks[selectedDate] || {};
             
-            // Get all unique task names for this child
-            const allTasks = ['shower', 'breakfast', 'chore', 'room', 'checkin', 'emp', 'laxative', 'reading', 'duolingo', 'writing', 'vocal', 'friends'];
-            const childTasks = allTasks.filter(t => {
-                // Check if this task appears in any day for this child
-                return Object.values(tasks).some(day => t in day);
-            });
+            // Define all tasks for each child
+            const childTaskMap = {
+                emerson: ['shower', 'breakfast', 'chore', 'room', 'checkin', 'pushups', 'mile', 'credit', 'driving'],
+                ireland: ['shower', 'breakfast', 'chore', 'room', 'checkin', 'emp', 'writing', 'vocal', 'reading', 'duolingo', 'friends'],
+                avenleigh: ['shower', 'breakfast', 'chore', 'room', 'emp', 'laxative', 'reading', 'duolingo', 'vocal']
+            };
+            
+            const childTasks = childTaskMap[child] || [];
             
             // Get task labels
             const taskLabels = {
@@ -1024,11 +1026,15 @@
                 checkin: 'Check In with Mom',
                 emp: 'Take EMP Supplement',
                 laxative: 'Laxative Chocolate',
-                reading: 'Reading',
-                duolingo: 'Duolingo',
+                reading: 'Reading (20 minutes)',
+                duolingo: 'Duolingo (5 lessons)',
                 writing: 'Book Editing/Writing',
                 vocal: 'Vocal Training',
-                friends: 'Text Friends'
+                friends: 'Text Friends',
+                pushups: 'Push-ups',
+                mile: 'Mile Time',
+                credit: 'Credit Recovery Hours',
+                driving: 'Driving Hours'
             };
             
             // Task colors
@@ -1044,7 +1050,11 @@
                 duolingo: '#FFD700',
                 writing: '#FF6347',
                 vocal: '#9370DB',
-                friends: '#00CED1'
+                friends: '#00CED1',
+                pushups: '#FF6B6B',
+                mile: '#4ECDC4',
+                credit: '#95E1D3',
+                driving: '#F38181'
             };
             
             // Display date header
