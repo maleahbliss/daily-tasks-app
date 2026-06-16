@@ -661,29 +661,37 @@
         <div id="history" class="dashboard">
             <h2 style="margin-bottom: 1rem; font-size: 1.3rem;">History</h2>
             
-            <div style="display: flex; gap: 1rem; margin-bottom: 1.5rem;">
-                <div class="input-group" style="flex: 1;">
-                    <label class="input-label">Child:</label>
-                    <select id="history-child" class="input-field" onchange="updateHistoryView()">
-                        <option value="emerson">Emerson</option>
-                        <option value="ireland">Ireland</option>
-                        <option value="avenleigh">Avenleigh</option>
-                    </select>
-                </div>
-                <div class="input-group" style="flex: 1;">
-                    <label class="input-label">Date:</label>
-                    <input type="date" id="history-date" class="input-field" onchange="updateHistoryView()">
-                </div>
+            <div class="input-group" style="margin-bottom: 1.5rem;">
+                <label class="input-label">Child:</label>
+                <select id="history-child" class="input-field" onchange="updateHistoryView()">
+                    <option value="emerson">Emerson</option>
+                    <option value="ireland">Ireland</option>
+                    <option value="avenleigh">Avenleigh</option>
+                </select>
             </div>
 
             <div id="history-task-list" style="margin-bottom: 2rem;">
                 <!-- Tasks will be populated here -->
             </div>
 
-            <div id="history-calendar" style="margin-top: 2rem; padding-top: 1rem; border-top: 1px solid #e0e0e0; display: none;">
-                <h3 style="margin-bottom: 1rem;">Calendar View</h3>
-                <div id="calendar-grid" style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 0.5rem;">
-                    <!-- Calendar will be populated here -->
+            <div id="history-detail" style="display: none; margin-top: 2rem; padding-top: 1rem; border-top: 1px solid #e0e0e0;">
+                <button class="btn" onclick="closeTaskDetail()" style="background: #999; width: auto; margin-bottom: 1.5rem;">← Back to Tasks</button>
+                
+                <h3 id="detail-task-name" style="margin-bottom: 1rem; font-size: 1.2rem;"></h3>
+                
+                <div style="margin-bottom: 1rem;">
+                    <p style="color: #666; font-size: 0.9rem; margin-bottom: 0.5rem;">Current Streak:</p>
+                    <p id="detail-streak" style="font-size: 1.5rem; font-weight: 600; margin: 0;"></p>
+                </div>
+                
+                <div id="detail-calendar" style="margin-bottom: 1rem;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                        <button onclick="previousMonth()" style="background: none; border: none; cursor: pointer; font-size: 1.5rem;">‹</button>
+                        <h4 id="calendar-month" style="margin: 0;"></h4>
+                        <button onclick="nextMonth()" style="background: none; border: none; cursor: pointer; font-size: 1.5rem;">›</button>
+                    </div>
+                    <div style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 0.5rem;" id="calendar-grid">
+                    </div>
                 </div>
             </div>
         </div>
@@ -995,18 +1003,12 @@
             alert('Notes saved!');
         }
 
+        let currentHistoryTask = null;
+        let currentHistoryMonth = new Date();
+
         function updateHistoryView() {
             const child = document.getElementById('history-child').value;
-            const dateInput = document.getElementById('history-date');
-            
-            // Set default date to today if not set
-            if (!dateInput.value) {
-                dateInput.value = appState.today;
-            }
-            
-            const selectedDate = dateInput.value;
             const tasks = appState.data[child].tasks;
-            const dayTasks = tasks[selectedDate] || {};
             
             // Define all tasks for each child
             const childTaskMap = {
@@ -1057,42 +1059,146 @@
                 driving: '#F38181'
             };
             
-            // Display date header
-            const dateObj = new Date(selectedDate + 'T00:00:00');
-            const dateHeader = dateObj.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' }).toUpperCase();
-            
             // Build task list
             const taskList = document.getElementById('history-task-list');
-            let html = `<div style="background: #f5f5f5; padding: 1rem; border-radius: 4px; margin-bottom: 1.5rem; font-weight: 600; text-align: center;">${dateHeader}</div>`;
+            let html = '';
             
             childTasks.forEach(taskKey => {
-                const isCompleted = dayTasks[taskKey] === true;
                 const label = taskLabels[taskKey] || taskKey;
                 const color = taskColors[taskKey] || '#999';
+                const streak = getTaskStreak(child, taskKey);
                 
                 html += `
-                    <div class="task-item" style="display: flex; align-items: center; padding: 1rem; border-bottom: 1px solid #f0f0f0;">
-                        <div style="width: 24px; height: 24px; border: 2px solid ${color}; border-radius: 4px; margin-right: 1rem; display: flex; align-items: center; justify-content: center; flex-shrink: 0; background: ${isCompleted ? color : 'transparent'}; color: white; font-weight: bold;">
-                            ${isCompleted ? '✓' : ''}
+                    <div onclick="openTaskDetail('${child}', '${taskKey}')" style="cursor: pointer; display: flex; align-items: center; padding: 1rem; border: 1px solid #f0f0f0; border-radius: 4px; margin-bottom: 0.5rem; transition: background 0.2s; background: white;">
+                        <div style="width: 24px; height: 24px; border-radius: 4px; margin-right: 1rem; background: ${color}; flex-shrink: 0;"></div>
+                        <div style="flex: 1;">
+                            <div style="font-weight: 500; color: #333;">${label}</div>
+                            <div style="font-size: 0.8rem; color: #999;">Streak: ${streak} days</div>
                         </div>
-                        <div class="task-text" style="flex: 1;">${label}</div>
-                        <div class="streak-badge" style="background: ${color}20; color: ${color}; padding: 0.4rem 0.8rem; border-radius: 20px; font-size: 0.8rem; font-weight: 600; margin-left: auto;">
-                            ${getTaskStreak(child, taskKey)}
-                        </div>
+                        <div style="color: #999; font-size: 1.2rem;">›</div>
                     </div>
                 `;
             });
             
             taskList.innerHTML = html;
+            
+            // Hide detail view when switching children
+            document.getElementById('history-detail').style.display = 'none';
         }
         
+        function openTaskDetail(child, taskKey) {
+            currentHistoryTask = { child, taskKey };
+            currentHistoryMonth = new Date();
+            
+            const taskLabels = {
+                shower: 'Shower/Hygiene',
+                breakfast: 'Breakfast',
+                chore: 'Daily Chore',
+                room: 'Room Straightened',
+                checkin: 'Check In with Mom',
+                emp: 'Take EMP Supplement',
+                laxative: 'Laxative Chocolate',
+                reading: 'Reading (20 minutes)',
+                duolingo: 'Duolingo (5 lessons)',
+                writing: 'Book Editing/Writing',
+                vocal: 'Vocal Training',
+                friends: 'Text Friends',
+                pushups: 'Push-ups',
+                mile: 'Mile Time',
+                credit: 'Credit Recovery Hours',
+                driving: 'Driving Hours'
+            };
+            
+            document.getElementById('history-task-name').textContent = taskLabels[taskKey];
+            document.getElementById('detail-streak').textContent = getTaskStreak(child, taskKey) + ' days';
+            document.getElementById('history-task-list').style.display = 'none';
+            document.getElementById('history-detail').style.display = 'block';
+            
+            renderTaskCalendar();
+        }
+        
+        function closeTaskDetail() {
+            currentHistoryTask = null;
+            document.getElementById('history-detail').style.display = 'none';
+            document.getElementById('history-task-list').style.display = 'block';
+        }
+        
+        function renderTaskCalendar() {
+            if (!currentHistoryTask) return;
+            
+            const { child, taskKey } = currentHistoryTask;
+            const tasks = appState.data[child].tasks;
+            
+            // Calendar header
+            const monthName = currentHistoryMonth.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+            document.getElementById('calendar-month').textContent = monthName;
+            
+            // Get days in month
+            const year = currentHistoryMonth.getFullYear();
+            const month = currentHistoryMonth.getMonth();
+            const firstDay = new Date(year, month, 1);
+            const lastDay = new Date(year, month + 1, 0);
+            const daysInMonth = lastDay.getDate();
+            const startingDayOfWeek = firstDay.getDay();
+            
+            // Build calendar grid
+            let html = '';
+            
+            // Day headers
+            const dayNames = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
+            dayNames.forEach(day => {
+                html += `<div style="text-align: center; font-weight: 600; color: #999; font-size: 0.8rem; padding: 0.5rem 0;">${day}</div>`;
+            });
+            
+            // Empty cells before month starts
+            for (let i = 0; i < startingDayOfWeek; i++) {
+                html += `<div></div>`;
+            }
+            
+            // Days of month
+            for (let day = 1; day <= daysInMonth; day++) {
+                const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                const isCompleted = tasks[dateStr] && tasks[dateStr][taskKey];
+                const isToday = dateStr === appState.today;
+                
+                html += `
+                    <div style="
+                        aspect-ratio: 1;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        border-radius: 4px;
+                        background: ${isCompleted ? '#4CAF50' : '#f0f0f0'};
+                        color: ${isCompleted ? 'white' : '#333'};
+                        font-weight: 600;
+                        border: ${isToday ? '2px solid #333' : 'none'};
+                    ">
+                        ${day}
+                        ${isCompleted ? '<span style="position: absolute; margin-top: -20px;">✓</span>' : ''}
+                    </div>
+                `;
+            }
+            
+            document.getElementById('calendar-grid').innerHTML = html;
+        }
+        
+        function previousMonth() {
+            currentHistoryMonth = new Date(currentHistoryMonth.getFullYear(), currentHistoryMonth.getMonth() - 1);
+            renderTaskCalendar();
+        }
+        
+        function nextMonth() {
+            currentHistoryMonth = new Date(currentHistoryMonth.getFullYear(), currentHistoryMonth.getMonth() + 1);
+            renderTaskCalendar();
+        }
+
         function getTaskStreak(child, taskKey) {
             const tasks = appState.data[child].tasks;
             const dates = Object.keys(tasks).sort().reverse();
             let streak = 0;
             
             for (let date of dates) {
-                if (tasks[date][taskKey]) {
+                if (tasks[date] && tasks[date][taskKey]) {
                     streak++;
                 } else {
                     break;
