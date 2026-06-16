@@ -129,9 +129,9 @@
         }
 
         .task-item.completed .task-checkbox {
-            background: #4CAF50;
-            border-color: #4CAF50;
+            background: inherit;
             color: white;
+            border-color: inherit;
         }
 
         .task-text {
@@ -354,34 +354,58 @@
         <div id="emerson" class="dashboard active">
             <div class="date-header" id="emerson-date"></div>
             
-            <div class="task-item" onclick="toggleTask('emerson', 'shower')">
+            <div class="task-item" onclick="toggleTask('emerson', 'shower')" data-color="#7B68EE">
                 <div class="task-checkbox"></div>
                 <div class="task-text">Shower/Hygiene</div>
                 <div class="streak-badge" id="emerson-shower-streak">0</div>
             </div>
 
-            <div class="task-item" onclick="toggleTask('emerson', 'breakfast')">
+            <div class="task-item" onclick="toggleTask('emerson', 'breakfast')" data-color="#FF1493">
                 <div class="task-checkbox"></div>
                 <div class="task-text">Breakfast</div>
                 <div class="streak-badge" id="emerson-breakfast-streak">0</div>
             </div>
 
-            <div class="task-item" onclick="toggleTask('emerson', 'chore')">
+            <div class="task-item" onclick="toggleTask('emerson', 'chore')" data-color="#FF8C00">
                 <div class="task-checkbox"></div>
                 <div class="task-text" id="emerson-chore-text">Daily Chore</div>
                 <div class="streak-badge" id="emerson-chore-streak">0</div>
             </div>
 
-            <div class="task-item" onclick="toggleTask('emerson', 'room')">
+            <div class="task-item" onclick="toggleTask('emerson', 'room')" data-color="#20B2AA">
                 <div class="task-checkbox"></div>
                 <div class="task-text">Room Straightened</div>
                 <div class="streak-badge" id="emerson-room-streak">0</div>
             </div>
 
-            <div class="task-item" onclick="toggleTask('emerson', 'checkin')">
+            <div class="task-item" onclick="toggleTask('emerson', 'checkin')" data-color="#4169E1">
                 <div class="task-checkbox"></div>
                 <div class="task-text">Check In with Mom</div>
                 <div class="streak-badge" id="emerson-checkin-streak">0</div>
+            </div>
+
+            <div class="task-item" onclick="toggleTask('emerson', 'pushups')" data-color="#FF6B6B">
+                <div class="task-checkbox"></div>
+                <div class="task-text">Push-ups</div>
+                <div class="streak-badge" id="emerson-pushups-streak">0</div>
+            </div>
+
+            <div class="task-item" onclick="toggleTask('emerson', 'mile')" data-color="#4ECDC4">
+                <div class="task-checkbox"></div>
+                <div class="task-text">Walk/Run</div>
+                <div class="streak-badge" id="emerson-mile-streak">0</div>
+            </div>
+
+            <div class="task-item" onclick="toggleTask('emerson', 'credit')" data-color="#95E1D3">
+                <div class="task-checkbox"></div>
+                <div class="task-text">Credit Recovery</div>
+                <div class="streak-badge" id="emerson-credit-streak">0</div>
+            </div>
+
+            <div class="task-item" onclick="toggleTask('emerson', 'driving')" data-color="#F38181">
+                <div class="task-checkbox"></div>
+                <div class="task-text">Driving</div>
+                <div class="streak-badge" id="emerson-driving-streak">0</div>
             </div>
 
             <div class="input-section">
@@ -409,67 +433,73 @@
         <div id="ireland" class="dashboard">
             <div class="date-header" id="ireland-date"></div>
             
-            <div class="task-item" onclick="toggleTask('ireland', 'shower')">
+            <div class="task-item" onclick="toggleTask('ireland', 'shower')" data-color="#7B68EE">
                 <div class="task-checkbox"></div>
                 <div class="task-text">Shower/Hygiene</div>
                 <div class="streak-badge" id="ireland-shower-streak">0</div>
             </div>
 
-            <div class="task-item" onclick="toggleTask('ireland', 'breakfast')">
+            <div class="task-item" onclick="toggleTask('ireland', 'breakfast')" data-color="#FF1493">
                 <div class="task-checkbox"></div>
                 <div class="task-text">Breakfast</div>
                 <div class="streak-badge" id="ireland-breakfast-streak">0</div>
             </div>
 
-            <div class="task-item" onclick="toggleTask('ireland', 'chore')">
+            <div class="task-item" onclick="toggleTask('ireland', 'chore')" data-color="#FF8C00">
                 <div class="task-checkbox"></div>
                 <div class="task-text" id="ireland-chore-text">Daily Chore</div>
                 <div class="streak-badge" id="ireland-chore-streak">0</div>
             </div>
 
-            <div class="task-item" onclick="toggleTask('ireland', 'room')">
+            <div class="task-item" onclick="toggleTask('ireland', 'room')" data-color="#20B2AA">
                 <div class="task-checkbox"></div>
                 <div class="task-text">Room Straightened</div>
                 <div class="streak-badge" id="ireland-room-streak">0</div>
             </div>
 
-            <div class="task-item" onclick="toggleTask('ireland', 'checkin')">
+            <div class="task-item" onclick="toggleTask('ireland', 'checkin')" data-color="#4169E1">
                 <div class="task-checkbox"></div>
                 <div class="task-text">Check In with Mom</div>
                 <div class="streak-badge" id="ireland-checkin-streak">0</div>
             </div>
 
-            <div class="task-item" onclick="toggleTask('ireland', 'emp')">
+            <div class="task-item" onclick="toggleTask('ireland', 'walk')" data-color="#4ECDC4">
+                <div class="task-checkbox"></div>
+                <div class="task-text">Walk/Run/Move</div>
+                <div class="streak-badge" id="ireland-walk-streak">0</div>
+            </div>
+
+            <div class="task-item" onclick="toggleTask('ireland', 'emp')" data-color="#DC143C">
                 <div class="task-checkbox"></div>
                 <div class="task-text">EMP Supplement</div>
                 <div class="streak-badge" id="ireland-emp-streak">0</div>
             </div>
 
-            <div class="task-item" onclick="toggleTask('ireland', 'writing')">
+            <div class="task-item" onclick="toggleTask('ireland', 'writing')" data-color="#FF6347">
                 <div class="task-checkbox"></div>
                 <div class="task-text">Book Editing/Writing</div>
                 <div class="streak-badge" id="ireland-writing-streak">0</div>
             </div>
 
-            <div class="task-item" onclick="toggleTask('ireland', 'vocal')">
+            <div class="task-item" onclick="toggleTask('ireland', 'vocal')" data-color="#9370DB">
                 <div class="task-checkbox"></div>
                 <div class="task-text">Vocal Training</div>
                 <div class="streak-badge" id="ireland-vocal-streak">0</div>
             </div>
 
-            <div class="task-item" onclick="toggleTask('ireland', 'reading')">
+            <div class="task-item" onclick="toggleTask('ireland', 'reading')" data-color="#228B22">
                 <div class="task-checkbox"></div>
                 <div class="task-text">Reading</div>
                 <div class="streak-badge" id="ireland-reading-streak">0</div>
             </div>
 
-            <div class="task-item" onclick="toggleTask('ireland', 'duolingo')">
+            <div class="task-item" onclick="toggleTask('ireland', 'duolingo')" data-color="#FFD700">
                 <div class="task-checkbox"></div>
                 <div class="task-text">Duolingo</div>
                 <div class="streak-badge" id="ireland-duolingo-streak">0</div>
             </div>
 
-            <div class="task-item" onclick="toggleTask('ireland', 'friends')">
+            <div class="task-item" onclick="toggleTask('ireland', 'friends')" data-color="#00CED1">
                 <div class="task-checkbox"></div>
                 <div class="task-text">Text Friends</div>
                 <div class="streak-badge" id="ireland-friends-streak">0</div>
@@ -492,55 +522,61 @@
         <div id="avenleigh" class="dashboard">
             <div class="date-header" id="avenleigh-date"></div>
             
-            <div class="task-item" onclick="toggleTask('avenleigh', 'shower')">
+            <div class="task-item" onclick="toggleTask('avenleigh', 'shower')" data-color="#7B68EE">
                 <div class="task-checkbox"></div>
                 <div class="task-text">Shower/Hygiene</div>
                 <div class="streak-badge" id="avenleigh-shower-streak">0</div>
             </div>
 
-            <div class="task-item" onclick="toggleTask('avenleigh', 'breakfast')">
+            <div class="task-item" onclick="toggleTask('avenleigh', 'breakfast')" data-color="#FF1493">
                 <div class="task-checkbox"></div>
                 <div class="task-text">Breakfast</div>
                 <div class="streak-badge" id="avenleigh-breakfast-streak">0</div>
             </div>
 
-            <div class="task-item" onclick="toggleTask('avenleigh', 'chore')">
+            <div class="task-item" onclick="toggleTask('avenleigh', 'chore')" data-color="#FF8C00">
                 <div class="task-checkbox"></div>
                 <div class="task-text" id="avenleigh-chore-text">Daily Chore</div>
                 <div class="streak-badge" id="avenleigh-chore-streak">0</div>
             </div>
 
-            <div class="task-item" onclick="toggleTask('avenleigh', 'room')">
+            <div class="task-item" onclick="toggleTask('avenleigh', 'room')" data-color="#20B2AA">
                 <div class="task-checkbox"></div>
                 <div class="task-text">Room Straightened</div>
                 <div class="streak-badge" id="avenleigh-room-streak">0</div>
             </div>
 
-            <div class="task-item" onclick="toggleTask('avenleigh', 'reading')">
+            <div class="task-item" onclick="toggleTask('avenleigh', 'walk')" data-color="#4ECDC4">
+                <div class="task-checkbox"></div>
+                <div class="task-text">Walk/Run/Move</div>
+                <div class="streak-badge" id="avenleigh-walk-streak">0</div>
+            </div>
+
+            <div class="task-item" onclick="toggleTask('avenleigh', 'reading')" data-color="#228B22">
                 <div class="task-checkbox"></div>
                 <div class="task-text">Reading (20 minutes)</div>
                 <div class="streak-badge" id="avenleigh-reading-streak">0</div>
             </div>
 
-            <div class="task-item" onclick="toggleTask('avenleigh', 'duolingo')">
+            <div class="task-item" onclick="toggleTask('avenleigh', 'duolingo')" data-color="#FFD700">
                 <div class="task-checkbox"></div>
                 <div class="task-text">Duolingo (5 lessons)</div>
                 <div class="streak-badge" id="avenleigh-duolingo-streak">0</div>
             </div>
 
-            <div class="task-item" onclick="toggleTask('avenleigh', 'emp')">
+            <div class="task-item" onclick="toggleTask('avenleigh', 'emp')" data-color="#DC143C">
                 <div class="task-checkbox"></div>
                 <div class="task-text">Take EMP Supplement</div>
                 <div class="streak-badge" id="avenleigh-emp-streak">0</div>
             </div>
 
-            <div class="task-item" onclick="toggleTask('avenleigh', 'laxative')">
+            <div class="task-item" onclick="toggleTask('avenleigh', 'laxative')" data-color="#FF69B4">
                 <div class="task-checkbox"></div>
                 <div class="task-text">Laxative Chocolate</div>
                 <div class="streak-badge" id="avenleigh-laxative-streak">0</div>
             </div>
 
-            <div class="task-item" onclick="toggleTask('avenleigh', 'vocal')">
+            <div class="task-item" onclick="toggleTask('avenleigh', 'vocal')" data-color="#9370DB">
                 <div class="task-checkbox"></div>
                 <div class="task-text">Vocal Training</div>
                 <div class="streak-badge" id="avenleigh-vocal-streak">0</div>
@@ -860,12 +896,18 @@
                 // Check if this is the task we're looking for by examining the onclick attribute
                 if (item.getAttribute('onclick') && item.getAttribute('onclick').includes(`'${task}'`)) {
                     const checkbox = item.querySelector('.task-checkbox');
+                    const color = item.getAttribute('data-color') || '#4CAF50';
+                    
                     if (appState.data[child].tasks[today][task]) {
                         item.classList.add('completed');
                         checkbox.textContent = '✓';
+                        checkbox.style.background = color;
+                        checkbox.style.borderColor = color;
                     } else {
                         item.classList.remove('completed');
                         checkbox.textContent = '';
+                        checkbox.style.background = 'transparent';
+                        checkbox.style.borderColor = '#ddd';
                     }
                 }
             });
@@ -1008,7 +1050,9 @@
 
         function updateHistoryView() {
             const child = document.getElementById('history-child').value;
-            const tasks = appState.data[child].tasks;
+            if (!child) return;
+            
+            const tasks = appState.data[child] ? appState.data[child].tasks : {};
             
             // Define all tasks for each child
             const childTaskMap = {
@@ -1061,6 +1105,10 @@
             
             // Build task list
             const taskList = document.getElementById('history-task-list');
+            const historyDetail = document.getElementById('history-detail');
+            
+            if (!taskList) return;
+            
             let html = '';
             
             childTasks.forEach(taskKey => {
@@ -1081,9 +1129,13 @@
             });
             
             taskList.innerHTML = html;
+            taskList.style.display = 'block';
             
             // Hide detail view when switching children
-            document.getElementById('history-detail').style.display = 'none';
+            if (historyDetail) historyDetail.style.display = 'none';
+            
+            // Clear current task
+            currentHistoryTask = null;
         }
         
         function openTaskDetail(child, taskKey) {
@@ -1109,10 +1161,15 @@
                 driving: 'Driving Hours'
             };
             
-            document.getElementById('history-task-name').textContent = taskLabels[taskKey];
-            document.getElementById('detail-streak').textContent = getTaskStreak(child, taskKey) + ' days';
-            document.getElementById('history-task-list').style.display = 'none';
-            document.getElementById('history-detail').style.display = 'block';
+            const detailTaskName = document.getElementById('detail-task-name');
+            const detailStreak = document.getElementById('detail-streak');
+            const historyTaskList = document.getElementById('history-task-list');
+            const historyDetail = document.getElementById('history-detail');
+            
+            if (detailTaskName) detailTaskName.textContent = taskLabels[taskKey];
+            if (detailStreak) detailStreak.textContent = getTaskStreak(child, taskKey) + ' days';
+            if (historyTaskList) historyTaskList.style.display = 'none';
+            if (historyDetail) historyDetail.style.display = 'block';
             
             renderTaskCalendar();
         }
@@ -1252,6 +1309,7 @@
                 const taskItems = dashboard.querySelectorAll('.task-item');
                 taskItems.forEach(item => {
                     const checkbox = item.querySelector('.task-checkbox');
+                    const color = item.getAttribute('data-color') || '#4CAF50';
                     const onclickAttr = item.getAttribute('onclick');
                     
                     // Extract task name from onclick attribute
@@ -1263,11 +1321,32 @@
                         if (appState.data[taskChild].tasks[today] && appState.data[taskChild].tasks[today][taskName]) {
                             item.classList.add('completed');
                             checkbox.textContent = '✓';
+                            checkbox.style.background = color;
+                            checkbox.style.borderColor = color;
                         } else {
                             item.classList.remove('completed');
                             checkbox.textContent = '';
+                            checkbox.style.background = 'transparent';
+                            checkbox.style.borderColor = '#ddd';
                         }
                     }
+                });
+            });
+        }
+
+        function applyTaskColors() {
+            const CHILDREN = ['emerson', 'ireland', 'avenleigh'];
+            CHILDREN.forEach(child => {
+                const dashboard = document.getElementById(child);
+                if (!dashboard) return;
+                
+                const taskItems = dashboard.querySelectorAll('.task-item');
+                taskItems.forEach(item => {
+                    const checkbox = item.querySelector('.task-checkbox');
+                    const color = item.getAttribute('data-color') || '#4CAF50';
+                    
+                    // Apply border color so colors show even when unchecked
+                    checkbox.style.borderColor = color;
                 });
             });
         }
@@ -1278,6 +1357,7 @@
             updateChoreDisplays();
             updateParentDashboard();
             initializeCheckboxes();
+            applyTaskColors();
             updateHistoryView();
         }
 
