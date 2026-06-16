@@ -719,7 +719,21 @@
         const CHORES = ['Sweeping & Vacuuming', 'Dishes & Kitchen', 'Living Room & Laundry'];
 
         let appState = {
-            today: new Date().toISOString().split('T')[0],
+            today: (() => {
+                // Get today's date in Mountain Time (UTC-6 or UTC-7 depending on DST)
+                const now = new Date();
+                const mtFormatter = new Intl.DateTimeFormat('en-US', {
+                    timeZone: 'America/Denver',
+                    year: 'numeric',
+                    month: '2-digit',
+                    day: '2-digit'
+                });
+                const parts = mtFormatter.formatToParts(now);
+                const year = parts.find(p => p.type === 'year').value;
+                const month = parts.find(p => p.type === 'month').value;
+                const day = parts.find(p => p.type === 'day').value;
+                return `${year}-${month}-${day}`;
+            })(),
             data: {
                 emerson: { tasks: {}, tracking: { pushups: 0, miles: [] }, streak: 0 },
                 ireland: { tasks: {}, tracking: { pages: 0, money: 0 }, streak: 0 },
@@ -962,7 +976,20 @@
                     console.log('Could not load state');
                 }
             }
-            const now = new Date().toISOString().split('T')[0];
+            // Get today's date in Mountain Time
+            const nowMT = new Date();
+            const mtFormatter = new Intl.DateTimeFormat('en-US', {
+                timeZone: 'America/Denver',
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit'
+            });
+            const parts = mtFormatter.formatToParts(nowMT);
+            const year = parts.find(p => p.type === 'year').value;
+            const month = parts.find(p => p.type === 'month').value;
+            const day = parts.find(p => p.type === 'day').value;
+            const now = `${year}-${month}-${day}`;
+            
             if (appState.today !== now) {
                 appState.today = now;
                 CHILDREN.forEach(child => {
