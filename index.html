@@ -790,7 +790,24 @@
         </div>
     </div>
 
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js"></script>
     <script>
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyDz9P6xMFoeriJxRM_3zgD8IBzqDZSNes0",
+            authDomain: "kids-habit-app.firebaseapp.com",
+            projectId: "kids-habit-app",
+            storageBucket: "kids-habit-app.firebasestorage.app",
+            messagingSenderId: "121582068783",
+            appId: "1:121582068783:web:10c9calac13497e6bed2da",
+            measurementId: "G-DC2K77T438"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+    </script>
         const CHILDREN = ['emerson', 'ireland', 'avenleigh'];
         const CHORES = ['Sweeping & Vacuuming', 'Dishes & Kitchen', 'Living Room & Laundry'];
 
@@ -935,6 +952,23 @@
                 }
             }
             appState.data[child].streak = streak;
+        }
+
+        function loadFromFirebase() {
+            // Set up real-time listeners for each child
+            CHILDREN.forEach(child => {
+                db.collection('habits').doc(child).onSnapshot((doc) => {
+                    if (doc.exists) {
+                        const data = doc.data();
+                        appState.data[child].tasks = data.tasks || appState.data[child].tasks;
+                        appState.data[child].tracking = data.tracking || appState.data[child].tracking;
+                        appState.data[child].streak = data.streak || 0;
+                        updateParentDashboard();
+                    }
+                }, error => {
+                    console.error("Error loading from Firebase:", error);
+                });
+            });
         }
 
         function updateParentDashboard() {
@@ -1265,8 +1299,25 @@
             return streak;
         }
 
+        function syncToFirebase() {
+            CHILDREN.forEach(child => {
+                const tasks = appState.data[child].tasks;
+                const tracking = appState.data[child].tracking;
+                
+                db.collection('habits').doc(child).set({
+                    tasks: tasks,
+                    tracking: tracking,
+                    streak: appState.data[child].streak,
+                    lastUpdated: new Date().toISOString()
+                }).catch(error => {
+                    console.error("Error syncing to Firebase:", error);
+                });
+            });
+        }
+
         function saveToLocalStorage() {
             localStorage.setItem('doneAppState', JSON.stringify(appState));
+            syncToFirebase();
         }
 
         function loadFromLocalStorage() {
@@ -1359,6 +1410,7 @@
             initializeCheckboxes();
             applyTaskColors();
             updateHistoryView();
+            loadFromFirebase();
         }
 
         init();
